@@ -1,0 +1,215 @@
+version: "3.9"
+
+services:
+
+  mysql:
+    image: mysql:8.0
+    container_name: patitas-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: patitas2024
+      MYSQL_USER: patitas
+      MYSQL_PASSWORD: patitas2024
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - patitas-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppatitas2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  ms-eureka:
+    build: ./ms-eureka
+    container_name: ms-eureka
+    restart: unless-stopped
+    ports:
+      - "8761:8761"
+    networks:
+      - patitas-net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8761/actuator/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  ms-gateway:
+    build: ./ms-gateway
+    container_name: ms-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      EUREKA_HOST: ms-eureka
+    depends_on:
+      ms-eureka:
+        condition: service_healthy
+    networks:
+      - patitas-net
+
+  ms-usuarios:
+    build: ./ms-usuarios
+    container_name: ms-usuarios
+    restart: unless-stopped
+    ports:
+      - "8081:8081"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      EUREKA_HOST: ms-eureka
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-eureka:
+        condition: service_healthy
+    networks:
+      - patitas-net
+
+  ms-autenticacion:
+    build: ./ms-autenticacion
+    container_name: ms-autenticacion
+    restart: unless-stopped
+    ports:
+      - "8082:8082"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      USUARIO_HOST: ms-usuarios
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-usuarios:
+        condition: service_started
+    networks:
+      - patitas-net
+
+  ms-refugios:
+    build: ./ms-refugios
+    container_name: ms-refugios
+    restart: unless-stopped
+    ports:
+      - "8084:8084"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - patitas-net
+
+  ms-adopciones:
+    build: ./ms-adopciones
+    container_name: ms-adopciones
+    restart: unless-stopped
+    ports:
+      - "8085:8085"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      USUARIO_HOST: ms-usuarios
+      REFUGIO_HOST: ms-refugios
+      MASCOTA_HOST: ms-mascotas
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-usuarios:
+        condition: service_started
+      ms-refugios:
+        condition: service_started
+    networks:
+      - patitas-net
+
+  ms-mascotas:
+    build: ./ms-mascotas
+    container_name: ms-mascotas
+    restart: unless-stopped
+    ports:
+      - "8086:8086"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      REFUGIO_HOST: ms-refugios
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-refugios:
+        condition: service_started
+    networks:
+      - patitas-net
+
+  ms-reportes:
+    build: ./ms-reportes
+    container_name: ms-reportes
+    restart: unless-stopped
+    ports:
+      - "8087:8087"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      USUARIO_HOST: ms-usuarios
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-usuarios:
+        condition: service_started
+    networks:
+      - patitas-net
+
+  ms-publicaciones:
+    build: ./ms-publicaciones
+    container_name: ms-publicaciones
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      USUARIO_HOST: ms-usuarios
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-usuarios:
+        condition: service_started
+    networks:
+      - patitas-net
+
+  ms-pedidos:
+    build: ./ms-pedidos
+    container_name: ms-pedidos
+    restart: unless-stopped
+    ports:
+      - "8089:8089"
+    environment:
+      DB_HOST: mysql
+      DB_USER: patitas
+      DB_PASS: patitas2024
+      USUARIO_HOST: ms-usuarios
+      PUBLICACION_HOST: ms-publicaciones
+    depends_on:
+      mysql:
+        condition: service_healthy
+      ms-usuarios:
+        condition: service_started
+      ms-publicaciones:
+        condition: service_started
+    networks:
+      - patitas-net
+
+networks:
+  patitas-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
