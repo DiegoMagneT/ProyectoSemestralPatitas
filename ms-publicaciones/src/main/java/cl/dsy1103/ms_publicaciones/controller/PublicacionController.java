@@ -57,7 +57,7 @@ public class PublicacionController {
         if (publicacionService.obtenerPorId(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        publicacionService.desactivarPublicacion(id); // Soft delete
+        publicacionService.desactivarPublicacion(id);
         return ResponseEntity.noContent().build();
     }
 }

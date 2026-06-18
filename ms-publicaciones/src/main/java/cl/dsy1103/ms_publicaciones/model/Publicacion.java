@@ -19,7 +19,7 @@ public class Publicacion {
     private Long id;
 
     @Column(name = "vendedor_id", nullable = false)
-    private Long vendedorId; // FK lógica a ms-usuarios
+    private Long vendedorId;
 
     @Column(nullable = false, length = 150)
     private String titulo;
@@ -35,7 +35,7 @@ public class Publicacion {
     private EstadoProducto estadoProducto;
 
     @Column(nullable = false, length = 100)
-    private String categoria; // Categoría del producto (Ej: Alimentos, Accesorios)
+    private String categoria;
 
     @Column(nullable = false, columnDefinition = "boolean default true")
     private Boolean disponible = true;
