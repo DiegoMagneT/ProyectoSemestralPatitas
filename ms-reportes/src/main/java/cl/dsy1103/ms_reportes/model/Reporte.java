@@ -18,7 +18,7 @@ public class Reporte {
     private Long id;
 
     @Column(name = "usuario_id", nullable = false)
-    private Long usuarioId; // Creador del reporte (FK lógica a ms-usuarios)
+    private Long usuarioId;
 
     @Column(nullable = false, length = 100)
     private String titulo;
