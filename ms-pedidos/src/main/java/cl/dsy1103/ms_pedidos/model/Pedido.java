@@ -19,10 +19,10 @@ public class Pedido {
     private Long id;
 
     @Column(name = "comprador_id", nullable = false)
-    private Long compradorId; // FK lógica a ms-usuarios
+    private Long compradorId;
 
     @Column(name = "publicacion_id", nullable = false)
-    private Long publicacionId; // FK lógica a ms-publicaciones
+    private Long publicacionId;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
