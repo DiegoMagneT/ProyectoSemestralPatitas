@@ -23,7 +23,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseDTO> obtenerPorId(@PathVariable("id") Long id) {
         return usuarioService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -37,7 +37,7 @@ public class UsuarioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizar(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody UsuarioRequestDTO dto) {
         return usuarioService.actualizar(id, dto)
                 .map(ResponseEntity::ok)
@@ -45,7 +45,7 @@ public class UsuarioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Long id) {
         if (usuarioService.obtenerPorId(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -54,7 +54,7 @@ public class UsuarioController {
     }
 
     @GetMapping("/{id}/activo")
-    public ResponseEntity<Boolean> verificarActivo(@PathVariable Long id) {
+    public ResponseEntity<Boolean> verificarActivo(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok(usuarioService.verificarActivo(id));
         } catch (RuntimeException ex) {
