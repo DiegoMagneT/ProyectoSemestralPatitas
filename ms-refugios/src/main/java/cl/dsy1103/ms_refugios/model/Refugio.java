@@ -29,7 +29,7 @@ public class Refugio {
     private Integer capacidadMax;
 
     @Column(name = "capacidad_actual", nullable = false)
-    private Integer capacidadActual = 0; // Inicia en 0
+    private Integer capacidadActual = 0;
 
     @Column(name = "operador_id", nullable = false)
     private Long operadorId;

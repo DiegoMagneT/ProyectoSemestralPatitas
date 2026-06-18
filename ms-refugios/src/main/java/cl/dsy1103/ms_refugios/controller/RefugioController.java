@@ -23,14 +23,14 @@ public class RefugioController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<RefugioResponseDTO> obtenerPorId(@PathVariable Long id) {
+    public ResponseEntity<RefugioResponseDTO> obtenerPorId(@PathVariable("id") Long id) {
         return refugioService.obtenerPorId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/ciudad/{ciudad}")
-    public ResponseEntity<List<RefugioResponseDTO>> filtrarPorCiudad(@PathVariable String ciudad) {
+    public ResponseEntity<List<RefugioResponseDTO>> filtrarPorCiudad(@PathVariable("ciudad") String ciudad) {
         return ResponseEntity.ok(refugioService.filtrarPorCiudad(ciudad));
     }
 
@@ -41,7 +41,7 @@ public class RefugioController {
 
     @PutMapping("/{id}")
     public ResponseEntity<RefugioResponseDTO> actualizar(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody RefugioRequestDTO dto) {
         return refugioService.actualizar(id, dto)
                 .map(ResponseEntity::ok)
@@ -49,7 +49,7 @@ public class RefugioController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(@PathVariable Long id) {
+    public ResponseEntity<Void> eliminar(@PathVariable("id") Long id) {
         if (refugioService.obtenerPorId(id).isEmpty()) {
             return ResponseEntity.notFound().build();
         }
@@ -58,7 +58,7 @@ public class RefugioController {
     }
 
     @GetMapping("/{id}/capacidad")
-    public ResponseEntity<Integer> consultarCapacidad(@PathVariable Long id) {
+    public ResponseEntity<Integer> consultarCapacidad(@PathVariable("id") Long id) {
         try {
             return ResponseEntity.ok(refugioService.consultarCapacidadDisponible(id));
         } catch (RuntimeException ex) {
